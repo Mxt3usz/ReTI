@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReTI Sim</title>
+    <link rel="stylesheet" href="retistyle.css">
+</head>
+<body>
+    <div class="editor">
+        <div id = "arrow" style="position: absolute;top: 8px;color: rgb(255, 255, 255);right: 450px;"></div>
+        <div class="line-numbers">
+            <span></span>
+        </div>
+    <textarea class = "code" id="code" placeholder="Enter ReTI Program..."></textarea>
+    </div>
+    <div id = "error" style="position: absolute;top: 50px;color: rgb(255, 30, 0);right: 450px;font-size: 8px;"></div>
+    <div class="container">
+        <img src="cpu.png" alt="Snow" style="width:100%;">
+        <div id = "pc"  class="pc"></div>
+        <div id = "in1" class="in1"></div>
+        <div id = "in2" class="in2"></div>
+        <div id = "acc" class="acc"></div>
+        <div id = "sp"  class="sp"></div>
+        <div id = "baf" class="baf"></div>
+        <div id = "cs"  class="cs"></div>
+        <div id = "ds"  class="ds"></div>
+      </div>
+    <button type="button" id = "run"> run </button><br>
+    
+    <div id = "memory" class = "memory">
+        <div  id="0">              0</div>
+        <div  id="1">              0</div>
+        <div  id="2">              0</div>
+        <div  id="3">              0</div>
+        <div  id="4">              0</div>
+        <div  id="5">              0</div>
+        <div  id="6">              0</div>
+        <div  id="7">              0</div>
+        <div  id="8">              0</div>
+        <div  id="9">              0</div>
+    </div>
+    <script src="retilogic.js"></script>
+</body>
+</html>

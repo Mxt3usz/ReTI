@@ -1,0 +1,147 @@
+.editor {
+    display: inline-flex;
+    gap: 10px;
+    font-family: monospace;
+    line-height: 10px;
+    background: #282a3a;
+    border-radius: 5px;
+    padding: 10px 10px;
+    font-size: 11px;
+  }
+  
+ .code {
+    line-height: 10px;
+    overflow-y: hidden;
+    padding: 0;
+    border: 0;
+    background: #282a3a;
+    color: #FFF;
+    min-width: 350px;
+    outline: none;
+    resize: none;
+    font-size: 9px;
+  }
+
+  .memory{
+    
+    position: absolute;
+    top: 86px;
+    right: 31px;
+    width: 51px;
+    height: 60px;
+    font-size: 5px;
+    background-color: white;
+    overflow-y: scroll; /* Add a vertical scrollbar */
+    border: 1px solid #ccc;
+    font-size: 6px;
+    counter-reset: linenumber -1;
+  }
+
+  .memory div {
+    counter-increment: linenumber;
+    white-space: pre; /* allows multiple spaces */
+    border-bottom: 1px solid #ccc; /* add line between each div */
+  }
+  
+  .memory div::before {
+    content: counter(linenumber);
+    color: #506882;
+  }
+
+
+  .line-numbers {
+    width: 10px;
+    text-align: right;
+    counter-reset: linenumber -1;
+    font-size:  10px;
+  }
+  
+  .line-numbers span {
+    counter-increment: linenumber;
+  }
+  
+  .line-numbers span::before {
+    content: counter(linenumber);
+    display: block;
+    color: #506882;
+  }
+
+/* Container holding the image and the text */
+.container {
+  position: relative;
+  text-align: center;
+  color:black;
+  width: 390px;
+  float: right;
+}
+
+.pc {
+  position: absolute;
+  top: 37px;
+  right: 346px;
+  font-size: 10px;
+}
+
+.in1 {
+  position: absolute;
+  top: 37px;
+  right: 326px;
+  font-size: 10px;
+}
+
+.in2 {
+  position: absolute;
+  top: 37px;
+  right: 306px;
+  font-size: 10px;
+}
+
+.acc {
+  position: absolute;
+  top: 37px;
+  right: 286px;
+  font-size: 10px;
+}
+
+.sp {
+  position: absolute;
+  top: 37px;
+  right: 265px;
+  font-size: 10px;
+}
+
+.baf {
+  position: absolute;
+  top: 37px;
+  right: 245px;
+  font-size: 10px;
+}
+
+.cs {
+  position: absolute;
+  top: 37px;
+  right: 225px;
+  font-size: 10px;
+}
+
+.ds {
+  position: absolute;
+  top: 37px;
+  right: 205px;
+  font-size: 10px;
+}
+
+/* Bottom right text */
+.bottom-right {
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+}
+
+/* Centered text */
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
