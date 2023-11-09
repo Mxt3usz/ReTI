@@ -1,39 +1,38 @@
 .editor {
     display: inline-flex;
-    gap: 10px;
+    gap: 3%;
     font-family: monospace;
-    line-height: 10px;
     background: #282a3a;
-    border-radius: 5px;
-    padding: 10px 10px;
-    font-size: 11px;
+    border-radius: 0%;
+    padding: 1% 1%;
+    line-height: 99%;
+    width: 40%;
   }
   
  .code {
-    line-height: 10px;
+    line-height: 110%;
     overflow-y: hidden;
     padding: 0;
     border: 0;
     background: #282a3a;
     color: #FFF;
-    min-width: 350px;
     outline: none;
     resize: none;
-    font-size: 9px;
+    font-size: 90%;
+    width: 50%;
   }
 
   .memory{
     
     position: absolute;
-    top: 86px;
-    right: 31px;
-    width: 51px;
-    height: 60px;
-    font-size: 5px;
+    top: 22.6%;
+    right: 3.8%;
+    width: 7%;
+    height: 17%;
     background-color: white;
     overflow-y: scroll; /* Add a vertical scrollbar */
     border: 1px solid #ccc;
-    font-size: 6px;
+    font-size: 20%;
     counter-reset: linenumber -1;
   }
 
@@ -50,10 +49,10 @@
 
 
   .line-numbers {
-    width: 10px;
+    width: 2%;
     text-align: right;
     counter-reset: linenumber -1;
-    font-size:  10px;
+    font-size:  85%;
   }
   
   .line-numbers span {
@@ -69,9 +68,8 @@
 /* Container holding the image and the text */
 .container {
   position: relative;
-  text-align: center;
   color:black;
-  width: 390px;
+  width: 52%;
   float: right;
 }
 

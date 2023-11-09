@@ -1,0 +1,32 @@
+body{
+    display:flex;
+    height: 100vh;
+    justify-content: space-between;
+}
+
+.code{
+    display: flex;
+    border: 0.1em solid black;
+    height: 60vh;
+    width: 25%;
+    margin-top: 2em;
+    margin-left: 2.5em;
+}
+.reti{
+    display: flex;
+    border: 0.1em solid black;
+    height: 60vh;
+    width: 60%;
+    margin-top: 2em;
+
+}
+.register{
+    display: flex;
+    border: 0.1em solid black;
+    height: 5%;
+    width: 5%;
+    text-align: center;
+    margin-top: 1em;
+    margin-left: 1em;
+}
+
