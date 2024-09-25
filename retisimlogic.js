@@ -24,9 +24,6 @@ function delay(ms) {
 let relations = {"<":(a,b)=>a<b, "<=":(a,b)=>a<=b, "==":(a,b)=>a==b, ">":(a,b)=>a>b, ">=":(a,b)=>a>=b, "!=":(a,b)=>a!=b};
 let compute_op = {"ADD":(a,b)=>a+b, "SUB":(a,b)=>a-b, "MUL":(a,b)=>a*b, "DIV":(a,b)=>Math.floor(a / b),
      "MOD":(a,b)=>a%b, "OPLUS":(a,b)=>a^b, "OR":(a,b)=>a|b, "AND":(a,b)=>a&b};
-// registers
-let registers = {"IVN":0,"PC":5, "IN1":0, "IN2":0, 
-    "ACC":0, "SP":512, "BAF":0, "CS":0, "DS":0};
 let uart = document.querySelector("#uart");
 let eprom = document.querySelector("#eprom");
 let sram = document.querySelector("#sram");
@@ -49,7 +46,7 @@ for (let i = 0; i < 1100; i++) {
     }
 }
 // Function to execute a single RETI operation
-async function executeOperation(operation, delayTime, normalbetrieb) {
+async function executeOperation(operation, delayTime, normalbetrieb, registers) {
     console.log(`Executing: ${operation}`);
     operation = operation.split(" ");  // split the operation into parts
     if (operation.length == 0 || operation.length > 4) { // no operation given or too many parts
@@ -153,14 +150,13 @@ async function executeOperation(operation, delayTime, normalbetrieb) {
                     return  [false, normalbetrieb];
                 }
     }
-    // await so setTimeout doesnt freeze the browser
-    // when promise is resolved, the function continues
-    await delay(delayTime);
-    console.log(`Finished: ${operation}`);
     return [true, normalbetrieb];
 }
 // Function to run the RETI code
 async function run() {
+    // registers
+    let registers = {"IVN":0,"PC":5, "IN1":0, "IN2":0, 
+    "ACC":0, "SP":512, "BAF":0, "CS":0, "DS":0};
     let code = document.querySelector("#query").value;
     let lines = code.split("\n");
     let NB = 1;
@@ -170,15 +166,46 @@ async function run() {
         sram.children[i+5].innerHTML = lines[i];
     }
     while (registers["PC"] < lines.length + 5 || NB == 0) {
-        let result = await executeOperation(sram.children[[registers["PC"]]].innerHTML, 1000, NB);
+        // fetch phase
+        let log = document.querySelector("#log");
+        log.innerHTML = "INSTRUCTION " + registers["PC"].toString().padStart(3, ' ') + ": " + 
+        (sram.children[[registers["PC"]]].innerHTML + " FETCH PHASE").padStart(20, ' ');
+        // reserve 5 characters for each register
+        log.innerHTML += "<br><br>REGISTERS: " + 
+        "IVN: " + registers["IVN"].toString().padStart(5, ' ') + 
+        " | PC: " + registers["PC"].toString().padStart(5, ' ') + 
+        " | IN1: " + registers["IN1"].toString().padStart(5, ' ') + 
+        " | IN2: " + registers["IN2"].toString().padStart(5, ' ') + 
+        " | ACC: " + registers["ACC"].toString().padStart(5, ' ') + 
+        " | SP: " + registers["SP"].toString().padStart(5, ' ') + 
+        " | BAF: " + registers["BAF"].toString().padStart(5, ' ') + 
+        " | CS: " + registers["CS"].toString().padStart(5, ' ') + 
+        " | DS: " + registers["DS"].toString().padStart(5, ' '); 
+        // await so setTimeout doesnt freeze the browser
+        // when promise is resolved, the function continues
+        await delay(1000);
+        // execute phase
+        let result = await executeOperation(sram.children[[registers["PC"]]].innerHTML, 1000, NB, registers);
         NB = result[1];
         if (!result[0]) {
             console.log("Invalid operation");
             break;
         }
         registers["PC"]++;
-    }
-    console.log(registers);
+        log.innerHTML = "INSTRUCTION " + registers["PC"].toString().padStart(3, ' ') + ": " + 
+        (sram.children[[registers["PC"]]].innerHTML + " EXECUTE PHASE").padStart(20, ' ');
+        log.innerHTML += "<br><br>REGISTERS: " + 
+        "IVN: " + registers["IVN"].toString().padStart(5, ' ') + 
+        " | PC: " + registers["PC"].toString().padStart(5, ' ') + 
+        " | IN1: " + registers["IN1"].toString().padStart(5, ' ') + 
+        " | IN2: " + registers["IN2"].toString().padStart(5, ' ') + 
+        " | ACC: " + registers["ACC"].toString().padStart(5, ' ') + 
+        " | SP: " + registers["SP"].toString().padStart(5, ' ') + 
+        " | BAF: " + registers["BAF"].toString().padStart(5, ' ') + 
+        " | CS: " + registers["CS"].toString().padStart(5, ' ') + 
+        " | DS: " + registers["DS"].toString().padStart(5, ' '); 
+        await delay(1000);
+        }
 }
 
 let reti = document.querySelector("#canvas");
@@ -186,6 +213,15 @@ reti.width = window.innerWidth;
 reti.height = window.innerHeight;
 reti = reti.getContext("2d");
 
+function drawDriver(x, y) {
+    reti.moveTo(x-18, y);
+    reti.lineTo(x+18, y);
+    reti.lineTo(x,y+25);
+    reti.lineTo(x-18, y);
+}
+
+function drawReti(fetch) {
+reti.clearRect(0, 0, reti.width, reti.height);
 // DI Bus
 reti.lineWidth = 3;
 reti.beginPath();
@@ -229,10 +265,7 @@ reti.lineTo(746, 320.5);
 reti.moveTo(759.5, 381);
 reti.lineTo(759.5, 400);
 //aluad
-reti.moveTo(759.5-18, 401);
-reti.lineTo(759.5+18, 401);
-reti.lineTo(759.5, 426);
-reti.lineTo(759.5-18, 401);
+drawDriver(759.5, 401);
 // aluad to A bus
 reti.moveTo(759.5, 426);
 reti.lineTo(759.5, 436);
@@ -240,10 +273,7 @@ reti.lineTo(759.5, 436);
 reti.moveTo(42.5, 265);
 reti.lineTo(42.5, 245);
 // 0ld
-reti.moveTo(42.5-18, 266);
-reti.lineTo(42.5+18, 266);
-reti.lineTo(42.5, 291);
-reti.lineTo(42.5-18, 266);
+drawDriver(42.5, 266);
 // 0ld to L bus
 reti.moveTo(42.5, 291);
 reti.lineTo(42.5, 300);
@@ -269,10 +299,7 @@ reti.moveTo(100.5, 100);
 reti.lineTo(75.5, 100);
 reti.lineTo(75.5, 340);
 //pcad
-reti.moveTo(75.5-18, 340);
-reti.lineTo(75.5+18, 340);
-reti.lineTo(75.5, 365);
-reti.lineTo(75.5-18, 340);
+drawDriver(75.5, 340);
 //pcad to A bus
 reti.moveTo(75.5, 365);
 reti.lineTo(75.5, 436);
@@ -285,10 +312,7 @@ reti.strokeRect(55.5 - 25, 68, 50, 25);
 reti.moveTo(55.5, 93);
 reti.lineTo(55.5, 165);
 // ivld
-reti.moveTo(55.5-18, 166);
-reti.lineTo(55.5+18, 166);
-reti.lineTo(55.5, 191);
-reti.lineTo(55.5-18, 166);
+drawDriver(55.5, 166);
 // ivld to L bus
 reti.moveTo(55.5, 191);
 reti.lineTo(55.5, 240);
@@ -304,10 +328,7 @@ for (let x = 100.5; x <= 740; x += 80) {
   reti.moveTo(x, 62);
   reti.lineTo(x, 265);
   // [reg]ld
-  reti.moveTo(x-18, 266);
-  reti.lineTo(x+18, 266);
-  reti.lineTo(x, 291);
-  reti.lineTo(x-18, 266);
+  drawDriver(x, 266);
   // register to [reg]dd
   reti.moveTo(x, 241 - offset_y);
   reti.lineTo(x+24, 241 - offset_y);
@@ -331,10 +352,7 @@ for (let x = 100.5; x <= 740; x += 80) {
 for (let x = 780.5; x <= 1020; x += 60) 
 {
 // 0rd ird drd to R bus
-reti.moveTo(x-18, 266);
-reti.lineTo(x+18, 266);
-reti.lineTo(x, 291);
-reti.lineTo(x-18, 266);
+drawDriver(x, 266);
 reti.moveTo(x+0.1, 291);
 reti.lineTo(x+0.1, 300);
 }
@@ -360,10 +378,7 @@ reti.moveTo(900.5, 100);
 reti.lineTo(925.5, 100);
 reti.lineTo(925.5, 340);
 // Iad
-reti.moveTo(925.5-18, 340);
-reti.lineTo(925.5+18, 340);
-reti.lineTo(925.5, 365);
-reti.lineTo(925.5-18, 340);
+drawDriver(925.5, 340);
 // Iad to A bus
 reti.moveTo(925.5, 365);
 reti.lineTo(925.5, 436);
@@ -391,10 +406,7 @@ reti.lineTo(1065.5, 76);
 reti.lineTo(1035.5, 76);
 reti.lineTo(1035.5, 66);
 // dud
-reti.moveTo(1035.5-18, 41);
-reti.lineTo(1035.5+18, 41);
-reti.lineTo(1035.5, 66);
-reti.lineTo(1035.5-18, 41);
+drawDriver(1035.5, 41);
 // dud to D bus
 reti.moveTo(1035.5, 41);
 reti.lineTo(1035.5, 19);
@@ -441,3 +453,5 @@ for (let x = 1365.5; x <= 1445.5; x += 80)
     reti.lineTo(x, 66);
 }
 reti.stroke();
+}
+drawReti(0);

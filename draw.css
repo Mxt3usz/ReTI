@@ -85,6 +85,15 @@ canvas{
     color: #506882;
 }
 
+#log{
+    position: absolute;
+    left: 18.5em;
+    top: 28em;
+    font-family: monospace;
+    white-space: pre; /* This preserves the spacing, this needed otherwise reserving doesnt work */
+    font-size: 120%;
+}
+
 
 /* use absolute since relative will move all objects relative to him 
  so absolute if u want to overlap divs without pbs
