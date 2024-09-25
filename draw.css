@@ -1,32 +1,94 @@
-body{
+html,body{
+    width: 100%;
+    height: 99%;
     display:flex;
-    height: 100vh;
-    justify-content: space-between;
 }
 
 .code{
     display: flex;
-    border: 0.1em solid black;
-    height: 60vh;
-    width: 25%;
-    margin-top: 2em;
-    margin-left: 2.5em;
-}
-.reti{
-    display: flex;
-    border: 0.1em solid black;
-    height: 60vh;
-    width: 60%;
-    margin-top: 2em;
-
-}
-.register{
-    display: flex;
-    border: 0.1em solid black;
-    height: 5%;
-    width: 5%;
-    text-align: center;
-    margin-top: 1em;
+    position: relative;
+    width: 15%;
+    height: 62%;
+    top: 2em;
     margin-left: 1em;
 }
+
+#lines{
+    display:flex;
+    flex-direction: column;
+    width: 4%;
+    height:80%;
+    counter-reset: linenumber -1;
+    line-height: 1em;
+    margin-right: 0.5em;
+    font-size: 95.5%;
+}
+
+#error{
+    display: flex;
+    width: 50%;
+}
+
+#query{
+    width: 100%;
+    overflow:hidden;
+}
+#lines span::before{
+    counter-increment: linenumber;
+    content: counter(linenumber);
+    margin-right: 0.5em;
+    color: #506882;
+}
+
+canvas{
+    position: relative;
+    width: 80%;
+    height: 90%;
+    margin-top: 2em;
+    left: 3em;
+}
+
+#mem{
+    display: flex;
+    position: absolute;
+    gap: 0.9em;
+    width: 27%;
+    height: 35%;
+    left: 67em;
+    top: 7.1em;
+}
+
+.memory{
+    position: relative;
+    width: 30%;
+    height: 92%;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    left: 0.2em;
+    top: 0.1em;
+    counter-reset: linenumber -1;
+
+}
+
+.memory-entry{
+    padding: 5px;
+    border-bottom: 1px black solid;
+    margin-bottom: 5px;
+    font-size: 75%;
+    
+}
+
+.memory-entry::before{
+    content: counter(linenumber);
+    counter-increment: linenumber;
+    margin-right: 0.5em;
+    color: #506882;
+}
+
+
+/* use absolute since relative will move all objects relative to him 
+ so absolute if u want to overlap divs without pbs
+ dont use vh or vw since not good with zoom
+ always use % or em for responsive design and flex 
+*/
 

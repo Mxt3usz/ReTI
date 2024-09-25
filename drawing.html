@@ -7,21 +7,36 @@
     <link rel="stylesheet" href="draw.css">
 </head>
 <body>
-    <div class="code"></div>
-    <div class="reti">
-        <div class="register" id="ivn"></div>
-        <div class="register" id="pc"></div>
-        <div class="register" id="in1"></div>
-        <div class="register" id="in2"></div>
-        <div class="register" id="acc"></div>
-        <div class="register" id="sp"></div>
-        <div class="register" id="baf"></div>
-        <div class="register" id="cs"></div>
-        <div class="register" id="ds"></div>
+    <div class="code">
+        <div id="lines"></div>
+        <textarea id="query"> </textarea>
+        <input type="button" value="Run" id="run" onclick="run()">
     </div>
-        <div class="memory"></div>
+    <canvas id="canvas"></canvas>
+    <div id="mem">
+    <div class="memory" id="uart"> 
+        <div class="memory-entry">00000000</div>
+        <div class="memory-entry">00000000</div>
+        <div class="memory-entry">00000000</div>
+        <div class="memory-entry">00000000</div>
+        <div class="memory-entry">00000000</div>
+        <div class="memory-entry">00000000</div>
+        <div class="memory-entry">00000000</div>
+        <div class="memory-entry">00000000</div>
     </div>
-
+    <div class="memory" id="eprom"> 
+        <div class="memory-entry"></div>
+        <div class="memory-entry"></div>
+        <div class="memory-entry"></div>
+        <div class="memory-entry"></div>
+        <div class="memory-entry"></div>
+        <div class="memory-entry"></div>
+        <div class="memory-entry"></div>
+        <div class="memory-entry"></div>
     </div>
+    <div class="memory" id="sram"> 
+    </div>
+    </div>
+    <script src="retisimlogic.js"></script>
 </body>
 </html>
