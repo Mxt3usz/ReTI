@@ -16,6 +16,244 @@ document.querySelector("#query").addEventListener("keyup", function() {
     }
 });
 
+let reti = document.querySelector("#canvas");
+reti.width = window.innerWidth;
+reti.height = window.innerHeight;
+reti = reti.getContext("2d");
+
+function drawDriver(x, y) {
+    reti.beginPath();
+    reti.strokeStyle = "black";
+    reti.moveTo(x-18, y);
+    reti.lineTo(x+18, y);
+    reti.lineTo(x,y+25);
+    reti.lineTo(x-18, y);
+    reti.stroke();
+}
+
+function drawDriverUp(x, y) {
+    reti.beginPath();
+    reti.moveTo(x-18, y);
+    reti.lineTo(x+18, y);
+    reti.lineTo(x, y - 25);
+    reti.lineTo(x-18, y);
+    reti.stroke();
+}
+
+function drawLine(x1, x2, y1, y2, color = "black", width = 2)
+{
+    reti.beginPath();
+    reti.lineWidth = width;
+    reti.strokeStyle = color;
+    reti.moveTo(x1, y1);
+    reti.lineTo(x2, y2);
+    reti.stroke();
+}
+
+function drawReti(color) {
+reti.clearRect(0, 0, window.innerWidth, window.innerHeight);
+reti.lineWidth = 3;
+// DI Bus
+drawLine(0, 686, 18, 18, color["DI"], 3);
+// D Bus
+drawLine(711, 1500, 18, 18, color["D"], 3);
+// L Bus
+drawLine(30, 745, 301, 301, color["alu"], 3);
+// R Bus
+drawLine(771, 980, 301, 301, color["alu"], 3);
+// A Bus
+drawLine(0, 1500, 437, 437, color["A"], 3);
+let offset_y = 0;
+let offset_x = 0;
+// L to alu and R to alu
+drawLine(720.5, 720.5, 302, 320, color["alu"]);
+drawLine(795.5, 795.5, 320, 302, color["alu"]);
+// alu
+reti.beginPath();
+reti.moveTo(720.5-30, 321);
+reti.lineTo(720.5+25, 321);
+reti.moveTo(720.5-30, 321);
+reti.lineTo(730, 380);
+reti.moveTo(730, 380);
+reti.lineTo(790, 380);
+reti.lineTo(825.5 , 321);
+reti.lineTo(770, 321);
+reti.lineTo(759, 340);
+reti.lineTo(746, 320.5);
+reti.stroke();
+// alu to aluad
+drawLine(759.5, 759.5, 381, 400, color["aluA"]);
+//aluad
+drawDriver(759.5, 401);
+// aluad to A bus
+drawLine(759.5, 759.5, 426, 436, color["aluA"]);
+// line for 0^32
+drawLine(42.5, 42.5, 245, 265, color["0L"]);
+// 0ld
+drawDriver(42.5, 266);
+// 0ld to L bus
+drawLine(42.5, 42.5, 291, 300, color["0L"]);
+// ddld
+reti.beginPath();
+reti.moveTo(710.5, 1);
+reti.lineTo(710.5, 36);
+reti.lineTo(685.5, 18);
+reti.lineTo(710.5, 1);
+reti.stroke();
+//aludid to DI bus
+drawLine(19.5, 19.5, 19, 300, color["aluDI"]);
+//aluid to ALU
+reti.beginPath();
+reti.strokeStyle = color["aluDI"];
+reti.moveTo(19.5, 326);
+reti.lineTo(19.5, 391);
+reti.lineTo(759, 391);
+reti.stroke();
+//aludid
+drawDriverUp(19.5, 325);
+//pc to pcad
+reti.beginPath();
+reti.strokeStyle = color["pcA"];
+reti.moveTo(100.5, 100);
+reti.lineTo(75.5, 100);
+reti.lineTo(75.5, 340);
+reti.stroke();
+//pcad
+drawDriver(75.5, 340);
+//pcad to A bus
+drawLine(75.5, 75.5, 365, 436, color["pcA"]);
+// DI bus to IVN
+drawLine(55.5, 55.5, 19, 68, color["IVNin"]);
+// IVN
+reti.strokeRect(55.5 - 25, 68, 50, 25);
+// IVN to ivld
+drawLine(55.5, 55.5, 93, 165, color["IVNout"]);
+// ivld
+drawDriver(55.5, 166);
+// ivld to L bus
+reti.beginPath();
+reti.strokeStyle = color["IVNL"];
+reti.moveTo(55.5, 191);
+reti.lineTo(55.5, 240);
+reti.lineTo(65.5, 240);
+reti.lineTo(65.5, 300);
+reti.stroke();
+let reg = {100.5: "PC", 180.5: "IN1", 260.5: "IN2", 340.5: "ACC", 420.5: "SP",
+    500.5: "BAF", 580.5: "CS", 660.5: "DS"};
+
+for (let x = 100.5; x <= 740; x += 80) {
+  // DI bus to registers
+  drawLine(x, x, 19, 35, color[reg[x]+"in"]);
+  // registers 
+  reti.strokeRect(x-25, 36, 50, 25);
+  // register to [reg]ld
+  drawLine(x, x, 62, 265, color[reg[x]+"L"]);
+  // [reg]ld
+  drawDriver(x, 266);
+  // register to [reg]dd
+  drawLine(x, x+24, 241 - offset_y, 241 - offset_y, color[reg[x]+"D"]);
+  // [reg]dd to D bus
+  drawLine(x+51, x+750-offset_x, 241 - offset_y, 241 - offset_y, color[reg[x]+"D"]);
+  drawLine(x+750-offset_x, x+750-offset_x, 241 - offset_y, 19, color[reg[x]+"D"]);
+  // [reg]ld to L bus
+  drawLine(x+0.1, x+0.1, 291, 300, color[reg[x]+"L"]);
+  // [reg]dd
+  reti.beginPath();
+  reti.moveTo(x+25, 241 - offset_y - 18);
+  reti.lineTo(x+25, 241 - offset_y + 18);
+  reti.lineTo(x+50, 241 - offset_y);
+  reti.lineTo(x+25, 241 - offset_y - 18);
+  reti.stroke();
+  offset_y += 23;
+  offset_x += 97;
+}
+// R bus drivers, transition and registers
+let trans = {780.5: "0R", 840.5: "IR", 900.5: "DR"};
+for (let x = 780.5; x <= 1020; x += 60) 
+{
+// 0rd ird drd to R bus
+drawDriver(x, 266);
+drawLine(x+0.1, x+0.1, 291, 300, color[trans[x]]);
+}
+//ic up line
+drawLine(780.5, 780.5, 265, 250);
+// 0rd up line
+drawLine(840.5, 840.5, 265, 250, color["0R"]);
+// I to ird
+drawLine(900.5, 900.5, 265, 62, color["IR"]);
+// I reg
+reti.strokeRect(900.5-25, 36, 50, 25);
+// D bus to I
+drawLine(900.5, 900.5, 19, 35, color["DtoI"]);
+// D to drd
+drawLine(960.5, 960.5, 265, 19, color["DR"]);
+// I to Iad
+reti.beginPath();
+reti.strokeStyle = color["IA"];
+reti.moveTo(900.5, 100);
+reti.lineTo(925.5, 100);
+reti.lineTo(925.5, 340);
+reti.stroke();
+// Iad
+drawDriver(925.5, 340);
+// Iad to A bus
+drawLine(925.5, 925.5, 365, 436, color["IA"]);
+// UART, EPROM, SRAM
+for (let x = 1065.5; x <= 1585.5; x += 170) 
+{
+    // A to driver
+    drawLine(x, x, 436, 406);
+    //driver
+    drawDriverUp(x, 406);
+    // UART, EPROM, SRAM
+    reti.strokeRect(x -77, 86, 155, 270);
+    // driver to UART, EPROM, SRAM
+    drawLine(x, x, 381, 357);
+}
+// UART to dud
+reti.beginPath();
+reti.moveTo(1065.5, 86);
+reti.lineTo(1065.5, 76);
+reti.lineTo(1035.5, 76);
+reti.lineTo(1035.5, 66);
+reti.stroke();
+// dud
+drawDriver(1035.5, 41);
+// dud to D bus
+drawLine(1035.5, 1035.5, 41, 19);
+// UART to udd
+drawLine(1065.5, 1075.5, 76, 66);
+// udd
+drawDriverUp(1075.5, 66);
+// udd to D bus
+drawLine(1075.5, 1075.5, 41, 19);
+// udd 0^32
+drawLine(1075.5, 1085.5, 66, 76);
+// EPROM to edd
+drawLine(1235.5, 1235.5, 86, 66);
+// edd
+drawDriverUp(1235.5, 66);
+// edd to D bus
+drawLine(1235.5, 1235.5, 41, 19);
+for (let x = 1365.5; x <= 1445.5; x += 80) 
+{
+    // dsmd
+    if(x != 1365.5)
+    {
+    drawDriverUp(x, 66);
+    }
+    else
+    {
+    drawDriver(x, 41);
+    }
+    // dsmd to D bus
+    drawLine(x, x, 41, 19);
+    // SRAM to smdd
+    drawLine(x, x, 86, 66);
+}
+}
+drawReti(0);
+
 // Function to simulate delay
 function delay(ms) {
     // promise for await to work
@@ -46,8 +284,7 @@ for (let i = 0; i < 1100; i++) {
     }
 }
 // Function to execute a single RETI operation
-async function executeOperation(operation, delayTime, normalbetrieb, registers) {
-    console.log(`Executing: ${operation}`);
+async function executeOperation(operation, normalbetrieb, registers, color) {
     operation = operation.split(" ");  // split the operation into parts
     if (operation.length == 0 || operation.length > 4) { // no operation given or too many parts
         return [false, normalbetrieb];
@@ -57,6 +294,7 @@ async function executeOperation(operation, delayTime, normalbetrieb, registers) 
                 if (operation.length != 3 || !(operation[1] in registers) || isNaN(operation[2]) || isNaN(sram.children[parseInt(operation[2])].innerHTML)) {
                     return [false, normalbetrieb];
                 }
+
                 registers[operation[1]] = parseInt(sram.children[parseInt(operation[2])].innerHTML) // LOAD D M<i> (D = M<i>)
                 break;
             case "LOADIN": // last check is to make sure in sram there is a number
@@ -152,6 +390,33 @@ async function executeOperation(operation, delayTime, normalbetrieb, registers) 
     }
     return [true, normalbetrieb];
 }
+function writeLog(log, registers) {
+    // reserve 5 characters for each register
+    log.innerHTML += "<br><br>REGISTERS: " + 
+    "IVN: " + registers["IVN"].toString().padStart(5, ' ') + 
+    " | PC: " + registers["PC"].toString().padStart(5, ' ') + 
+    " | IN1: " + registers["IN1"].toString().padStart(5, ' ') + 
+    " | IN2: " + registers["IN2"].toString().padStart(5, ' ') + 
+    " | ACC: " + registers["ACC"].toString().padStart(5, ' ') + 
+    " | SP: " + registers["SP"].toString().padStart(5, ' ') + 
+    " | BAF: " + registers["BAF"].toString().padStart(5, ' ') + 
+    " | CS: " + registers["CS"].toString().padStart(5, ' ') + 
+    " | DS: " + registers["DS"].toString().padStart(5, ' '); 
+}
+
+function defineColors(registers) {
+    let reti_colors = {"0L": "black", "alu": "black", "aludDI": "black", "aluA": "black",
+        "pcA": "black", "A": "black", "D": "black", "DI": "black",
+        "0R": "black", "IR": "black", "IA": "black", "DR": "black", "DtoI": "black"};
+    for (let key in registers) {
+        reti_colors[key + "in"] = "black";
+        reti_colors[key + "out"] = "black";
+        reti_colors[key + "L"] = "black";
+        reti_colors[key + "D"] = "black";
+    }
+    return reti_colors;
+}
+
 // Function to run the RETI code
 async function run() {
     // registers
@@ -170,288 +435,30 @@ async function run() {
         let log = document.querySelector("#log");
         log.innerHTML = "INSTRUCTION " + registers["PC"].toString().padStart(3, ' ') + ": " + 
         (sram.children[[registers["PC"]]].innerHTML + " FETCH PHASE").padStart(20, ' ');
-        // reserve 5 characters for each register
-        log.innerHTML += "<br><br>REGISTERS: " + 
-        "IVN: " + registers["IVN"].toString().padStart(5, ' ') + 
-        " | PC: " + registers["PC"].toString().padStart(5, ' ') + 
-        " | IN1: " + registers["IN1"].toString().padStart(5, ' ') + 
-        " | IN2: " + registers["IN2"].toString().padStart(5, ' ') + 
-        " | ACC: " + registers["ACC"].toString().padStart(5, ' ') + 
-        " | SP: " + registers["SP"].toString().padStart(5, ' ') + 
-        " | BAF: " + registers["BAF"].toString().padStart(5, ' ') + 
-        " | CS: " + registers["CS"].toString().padStart(5, ' ') + 
-        " | DS: " + registers["DS"].toString().padStart(5, ' '); 
+        writeLog(log, registers);
+        let reti_colors = defineColors(registers);
+        reti_colors["pcA"] = "red";
+        reti_colors["A"] = "red";
+        reti_colors["D"] = "red";
+        reti_colors["DtoI"] = "red";
+
+        drawReti(reti_colors);
         // await so setTimeout doesnt freeze the browser
         // when promise is resolved, the function continues
         await delay(1000);
         // execute phase
-        let result = await executeOperation(sram.children[[registers["PC"]]].innerHTML, 1000, NB, registers);
+        reti_colors = defineColors(registers);
+        let result = await executeOperation(sram.children[[registers["PC"]]].innerHTML, NB, registers, reti_colors);
         NB = result[1];
         if (!result[0]) {
             console.log("Invalid operation");
             break;
         }
-        registers["PC"]++;
         log.innerHTML = "INSTRUCTION " + registers["PC"].toString().padStart(3, ' ') + ": " + 
         (sram.children[[registers["PC"]]].innerHTML + " EXECUTE PHASE").padStart(20, ' ');
-        log.innerHTML += "<br><br>REGISTERS: " + 
-        "IVN: " + registers["IVN"].toString().padStart(5, ' ') + 
-        " | PC: " + registers["PC"].toString().padStart(5, ' ') + 
-        " | IN1: " + registers["IN1"].toString().padStart(5, ' ') + 
-        " | IN2: " + registers["IN2"].toString().padStart(5, ' ') + 
-        " | ACC: " + registers["ACC"].toString().padStart(5, ' ') + 
-        " | SP: " + registers["SP"].toString().padStart(5, ' ') + 
-        " | BAF: " + registers["BAF"].toString().padStart(5, ' ') + 
-        " | CS: " + registers["CS"].toString().padStart(5, ' ') + 
-        " | DS: " + registers["DS"].toString().padStart(5, ' '); 
+        writeLog(log, registers);
+        drawReti(reti_colors);
         await delay(1000);
+        registers["PC"]++;
         }
 }
-
-let reti = document.querySelector("#canvas");
-reti.width = window.innerWidth;
-reti.height = window.innerHeight;
-reti = reti.getContext("2d");
-
-function drawDriver(x, y) {
-    reti.moveTo(x-18, y);
-    reti.lineTo(x+18, y);
-    reti.lineTo(x,y+25);
-    reti.lineTo(x-18, y);
-}
-
-function drawReti(fetch) {
-reti.clearRect(0, 0, reti.width, reti.height);
-// DI Bus
-reti.lineWidth = 3;
-reti.beginPath();
-reti.moveTo(0, 18);
-reti.lineTo(686, 18);
-// D Bus
-reti.moveTo(711, 18);
-reti.lineTo(1500, 18);
-// L Bus
-reti.moveTo(30, 301);
-reti.lineTo(745, 301);
-// R Bus
-reti.moveTo(771, 301);
-reti.lineTo(980, 301);
-// A Bus
-reti.moveTo(0, 437);
-reti.lineTo(1500, 437);
-reti.stroke();
-
-reti.lineWidth = 2;
-let offset_y = 0;
-let offset_x = 0;
-reti.beginPath();
-// L to alu and R to alu
-reti.moveTo(720.5, 302);
-reti.lineTo(720.5, 320);
-reti.moveTo(795.5, 320);
-reti.lineTo(795.5, 302);
-// alu
-reti.moveTo(720.5-30, 321);
-reti.lineTo(720.5+25, 321);
-reti.moveTo(720.5-30, 321);
-reti.lineTo(730, 380);
-reti.moveTo(730, 380);
-reti.lineTo(790, 380);
-reti.lineTo(825.5 , 321);
-reti.lineTo(770, 321);
-reti.lineTo(759, 340);
-reti.lineTo(746, 320.5);
-// alu to aluad
-reti.moveTo(759.5, 381);
-reti.lineTo(759.5, 400);
-//aluad
-drawDriver(759.5, 401);
-// aluad to A bus
-reti.moveTo(759.5, 426);
-reti.lineTo(759.5, 436);
-// line for 0^32
-reti.moveTo(42.5, 265);
-reti.lineTo(42.5, 245);
-// 0ld
-drawDriver(42.5, 266);
-// 0ld to L bus
-reti.moveTo(42.5, 291);
-reti.lineTo(42.5, 300);
-// ddld
-reti.moveTo(710.5, 1);
-reti.lineTo(710.5, 36);
-reti.lineTo(685.5, 18);
-reti.lineTo(710.5, 1);
-//aludid to DI bus
-reti.moveTo(19.5, 19);
-reti.lineTo(19.5, 300);
-//aluid to ALU
-reti.moveTo(19.5, 326);
-reti.lineTo(19.5, 391);
-reti.lineTo(759, 391);
-//aludid
-reti.moveTo(19.5-18, 325);
-reti.lineTo(19.5+18, 325);
-reti.lineTo(19.5, 300);
-reti.lineTo(19.5-18, 325);
-//pc to pcad
-reti.moveTo(100.5, 100);
-reti.lineTo(75.5, 100);
-reti.lineTo(75.5, 340);
-//pcad
-drawDriver(75.5, 340);
-//pcad to A bus
-reti.moveTo(75.5, 365);
-reti.lineTo(75.5, 436);
-// DI bus to IVN
-reti.moveTo(55.5, 19);
-reti.lineTo(55.5, 68);
-// IVN
-reti.strokeRect(55.5 - 25, 68, 50, 25);
-// IVN to ivld
-reti.moveTo(55.5, 93);
-reti.lineTo(55.5, 165);
-// ivld
-drawDriver(55.5, 166);
-// ivld to L bus
-reti.moveTo(55.5, 191);
-reti.lineTo(55.5, 240);
-reti.lineTo(65.5, 240);
-reti.lineTo(65.5, 300);
-for (let x = 100.5; x <= 740; x += 80) {
-  // DI bus to registers
-  reti.moveTo(x, 19);
-  reti.lineTo(x, 35);
-  // registers 
-  reti.strokeRect(x-25, 36, 50, 25);
-  // register to [reg]ld
-  reti.moveTo(x, 62);
-  reti.lineTo(x, 265);
-  // [reg]ld
-  drawDriver(x, 266);
-  // register to [reg]dd
-  reti.moveTo(x, 241 - offset_y);
-  reti.lineTo(x+24, 241 - offset_y);
-  // [reg]dd to D bus
-  reti.moveTo(x+51, 241 - offset_y);
-  reti.lineTo(x+750-offset_x, 241 - offset_y);
-  reti.moveTo(x+750-offset_x, 241 - offset_y);
-  reti.lineTo(x+750-offset_x, 19);
-  // [reg]ld to L bus
-  reti.moveTo(x+0.1, 291);
-  reti.lineTo(x+0.1, 300);
-  // [reg]dd
-  reti.moveTo(x+25, 241 - offset_y - 18);
-  reti.lineTo(x+25, 241 - offset_y + 18);
-  reti.lineTo(x+50, 241 - offset_y);
-  reti.lineTo(x+25, 241 - offset_y - 18);
-  offset_y += 23;
-  offset_x += 97;
-}
-// R bus drivers, transition and registers
-for (let x = 780.5; x <= 1020; x += 60) 
-{
-// 0rd ird drd to R bus
-drawDriver(x, 266);
-reti.moveTo(x+0.1, 291);
-reti.lineTo(x+0.1, 300);
-}
-//ic up line
-reti.moveTo(780.5, 265);
-reti.lineTo(780.5, 250);
-// 0rd up line
-reti.moveTo(840.5, 265);
-reti.lineTo(840.5, 250);
-// I to ird
-reti.moveTo(900.5, 265);
-reti.lineTo(900.5, 62);
-// I reg
-reti.strokeRect(900.5-25, 36, 50, 25);
-// D bus to I
-reti.moveTo(900.5, 19);
-reti.lineTo(900.5, 35);
-// D to drd
-reti.moveTo(960.5, 265);
-reti.lineTo(960.5, 19);
-// I to Iad
-reti.moveTo(900.5, 100);
-reti.lineTo(925.5, 100);
-reti.lineTo(925.5, 340);
-// Iad
-drawDriver(925.5, 340);
-// Iad to A bus
-reti.moveTo(925.5, 365);
-reti.lineTo(925.5, 436);
-
-// UART, EPROM, SRAM
-for (let x = 1065.5; x <= 1585.5; x += 170) 
-{
-    // A to driver
-    reti.moveTo(x, 436);
-    reti.lineTo(x, 406);
-    //driver
-    reti.moveTo(x - 18, 406);
-    reti.lineTo(x + 18, 406);
-    reti.lineTo(x, 381);
-    reti.lineTo(x - 18, 406);
-    // UART, EPROM, SRAM
-    reti.strokeRect(x -77, 86, 155, 270);
-    // driver to UART, EPROM, SRAM
-    reti.moveTo(x, 381);
-    reti.lineTo(x, 357);
-}
-// UART to dud
-reti.moveTo(1065.5, 86);
-reti.lineTo(1065.5, 76);
-reti.lineTo(1035.5, 76);
-reti.lineTo(1035.5, 66);
-// dud
-drawDriver(1035.5, 41);
-// dud to D bus
-reti.moveTo(1035.5, 41);
-reti.lineTo(1035.5, 19);
-// UART to udd
-reti.moveTo(1065.5, 76);
-reti.lineTo(1075.5, 66);
-// udd
-reti.moveTo(1075.5-18, 66);
-reti.lineTo(1075.5+18, 66);
-reti.lineTo(1075.5, 41);
-reti.lineTo(1075.5-18, 66);
-// udd to D bus
-reti.moveTo(1075.5, 41);
-reti.lineTo(1075.5, 19);
-// udd 0^32
-reti.moveTo(1075.5, 66);
-reti.lineTo(1085.5, 76);
-// EPROM to edd
-reti.moveTo(1235.5, 86);
-reti.lineTo(1235.5, 66);
-// edd
-reti.moveTo(1235.5-18, 66);
-reti.lineTo(1235.5+18, 66);
-reti.lineTo(1235.5, 41);
-reti.lineTo(1235.5-18, 66);
-// edd to D bus
-reti.moveTo(1235.5, 41);
-reti.lineTo(1235.5, 19);
-for (let x = 1365.5; x <= 1445.5; x += 80) 
-{
-    // SRAM to dsmd
-    reti.moveTo(x, 86);
-    reti.lineTo(x, 66);
-    // dsmd
-    reti.moveTo(x-18, 66);
-    reti.lineTo(x+18, 66);
-    reti.lineTo(x, 41);
-    reti.lineTo(x-18, 66);
-    // dsmd to D bus
-    reti.moveTo(x, 41);
-    reti.lineTo(x, 19);
-    // SRAM to smdd
-    reti.moveTo(x, 86);
-    reti.lineTo(x, 66);
-}
-reti.stroke();
-}
-drawReti(0);
