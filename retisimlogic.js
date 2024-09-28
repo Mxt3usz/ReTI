@@ -33,6 +33,7 @@ function drawDriver(x, y) {
 
 function drawDriverUp(x, y) {
     reti.beginPath();
+    reti.strokeStyle = "black";
     reti.moveTo(x-18, y);
     reti.lineTo(x+18, y);
     reti.lineTo(x, y - 25);
@@ -70,6 +71,7 @@ drawLine(720.5, 720.5, 302, 320, color["alu"]);
 drawLine(795.5, 795.5, 320, 302, color["alu"]);
 // alu
 reti.beginPath();
+reti.strokeStyle = "black";
 reti.moveTo(720.5-30, 321);
 reti.lineTo(720.5+25, 321);
 reti.moveTo(720.5-30, 321);
@@ -81,8 +83,10 @@ reti.lineTo(770, 321);
 reti.lineTo(759, 340);
 reti.lineTo(746, 320.5);
 reti.stroke();
-// alu to aluad
-drawLine(759.5, 759.5, 381, 400, color["aluA"]);
+// aluout to connection point
+drawLine(759.5, 759.5, 381, 392, color["alu"]);
+// connection point to aluad
+drawLine(759.5, 759.5, 392, 400, color["aluA"]);
 //aluad
 drawDriver(759.5, 401);
 // aluad to A bus
@@ -95,6 +99,7 @@ drawDriver(42.5, 266);
 drawLine(42.5, 42.5, 291, 300, color["0L"]);
 // ddld
 reti.beginPath();
+reti.strokeStyle = "black";
 reti.moveTo(710.5, 1);
 reti.lineTo(710.5, 36);
 reti.lineTo(685.5, 18);
@@ -125,6 +130,7 @@ drawLine(75.5, 75.5, 365, 436, color["pcA"]);
 // DI bus to IVN
 drawLine(55.5, 55.5, 19, 68, color["IVNin"]);
 // IVN
+reti.strokeStyle = "black";
 reti.strokeRect(55.5 - 25, 68, 50, 25);
 // IVN to ivld
 drawLine(55.5, 55.5, 93, 165, color["IVNout"]);
@@ -145,12 +151,27 @@ for (let x = 100.5; x <= 740; x += 80) {
   // DI bus to registers
   drawLine(x, x, 19, 35, color[reg[x]+"in"]);
   // registers 
+  reti.strokeStyle = "black";
   reti.strokeRect(x-25, 36, 50, 25);
-  // register to [reg]ld
-  drawLine(x, x, 62, 265, color[reg[x]+"L"]);
+  // register out to (connection point)
+  if (x == 100.5) // pc
+   {
+    drawLine(x, x, 62, 101, color[reg[x]+"out"]);
+    if (color[reg[x]+"L"] == "red" || color[reg[x]+"D"] == "red") {
+    drawLine(x, x, 101, 265, color[reg[x]+"out"]);
+    }
+    else{
+        drawLine(x, x, 101, 265);
+    }
+   }
+   else{
+  drawLine(x, x, 62, 242 - offset_y, color[reg[x]+"out"]);
+   }
+  // connection point to [reg]ld
+  drawLine(x, x, 242 - offset_y, 265, color[reg[x]+"L"]);
   // [reg]ld
   drawDriver(x, 266);
-  // register to [reg]dd
+  // (connection point) to [reg]dd
   drawLine(x, x+24, 241 - offset_y, 241 - offset_y, color[reg[x]+"D"]);
   // [reg]dd to D bus
   drawLine(x+51, x+750-offset_x, 241 - offset_y, 241 - offset_y, color[reg[x]+"D"]);
@@ -159,6 +180,7 @@ for (let x = 100.5; x <= 740; x += 80) {
   drawLine(x+0.1, x+0.1, 291, 300, color[reg[x]+"L"]);
   // [reg]dd
   reti.beginPath();
+  reti.strokeStyle = "black";
   reti.moveTo(x+25, 241 - offset_y - 18);
   reti.lineTo(x+25, 241 - offset_y + 18);
   reti.lineTo(x+50, 241 - offset_y);
@@ -168,20 +190,23 @@ for (let x = 100.5; x <= 740; x += 80) {
   offset_x += 97;
 }
 // R bus drivers, transition and registers
-let trans = {780.5: "0R", 840.5: "IR", 900.5: "DR"};
-for (let x = 780.5; x <= 1020; x += 60) 
+let trans = {780.5: "1R", 840.5: "0R", 900.5: "IR", 960.5: "DR"};
+for (let x = 780.5; x <= 960.5; x += 60) 
 {
 // 0rd ird drd to R bus
 drawDriver(x, 266);
 drawLine(x+0.1, x+0.1, 291, 300, color[trans[x]]);
 }
-//ic up line
-drawLine(780.5, 780.5, 265, 250);
+//1R up line
+drawLine(780.5, 780.5, 265, 250, color["1R"]);
 // 0rd up line
 drawLine(840.5, 840.5, 265, 250, color["0R"]);
+// I to connection point
+drawLine(900.5, 900.5, 101, 62, color["Iout"])
 // I to ird
-drawLine(900.5, 900.5, 265, 62, color["IR"]);
+drawLine(900.5, 900.5, 101, 265, color["IR"])
 // I reg
+reti.strokeStyle = "black";
 reti.strokeRect(900.5-25, 36, 50, 25);
 // D bus to I
 drawLine(900.5, 900.5, 19, 35, color["DtoI"]);
@@ -199,19 +224,21 @@ drawDriver(925.5, 340);
 // Iad to A bus
 drawLine(925.5, 925.5, 365, 436, color["IA"]);
 // UART, EPROM, SRAM
-for (let x = 1065.5; x <= 1585.5; x += 170) 
+let mem = {1065.5 : "U", 1235.5 : "E", 1405.5 : "S"};
+for (let x = 1065.5; x <= 1405.5; x += 170) 
 {
     // A to driver
-    drawLine(x, x, 436, 406);
+    drawLine(x, x, 436, 406, color["A" + mem[x]]);
     //driver
     drawDriverUp(x, 406);
     // UART, EPROM, SRAM
     reti.strokeRect(x -77, 86, 155, 270);
     // driver to UART, EPROM, SRAM
-    drawLine(x, x, 381, 357);
+    drawLine(x, x, 381, 357, color["A" + mem[x]]);
 }
 // UART to dud
 reti.beginPath();
+reti.strokeStyle = color["DU"];
 reti.moveTo(1065.5, 86);
 reti.lineTo(1065.5, 76);
 reti.lineTo(1035.5, 76);
@@ -220,24 +247,25 @@ reti.stroke();
 // dud
 drawDriver(1035.5, 41);
 // dud to D bus
-drawLine(1035.5, 1035.5, 41, 19);
+drawLine(1035.5, 1035.5, 41, 19, color["DU"]);
 // UART to udd
-drawLine(1065.5, 1075.5, 76, 66);
+drawLine(1065.5, 1075.5, 76, 66, color["AU"]);
 // udd
 drawDriverUp(1075.5, 66);
 // udd to D bus
-drawLine(1075.5, 1075.5, 41, 19);
+drawLine(1075.5, 1075.5, 41, 19, color["AU"]);
 // udd 0^32
-drawLine(1075.5, 1085.5, 66, 76);
+drawLine(1075.5, 1085.5, 66, 76, color["AU"]);
 // EPROM to edd
-drawLine(1235.5, 1235.5, 86, 66);
+drawLine(1235.5, 1235.5, 86, 66, color["AE"]);
 // edd
 drawDriverUp(1235.5, 66);
 // edd to D bus
-drawLine(1235.5, 1235.5, 41, 19);
+drawLine(1235.5, 1235.5, 41, 19, color["AE"]);
+let sram = {1365.5 : "DS", 1445.5 : "ASS"};
 for (let x = 1365.5; x <= 1445.5; x += 80) 
 {
-    // dsmd
+    // ds
     if(x != 1365.5)
     {
     drawDriverUp(x, 66);
@@ -246,10 +274,10 @@ for (let x = 1365.5; x <= 1445.5; x += 80)
     {
     drawDriver(x, 41);
     }
-    // dsmd to D bus
-    drawLine(x, x, 41, 19);
-    // SRAM to smdd
-    drawLine(x, x, 86, 66);
+    // ds to D bus
+    drawLine(x, x, 41, 19, color[sram[x]]);
+    // SRAM to ds
+    drawLine(x, x, 86, 66, color[sram[x]]);
 }
 }
 drawReti(0);
@@ -285,7 +313,9 @@ for (let i = 0; i < 1100; i++) {
 }
 // Function to execute a single RETI operation
 async function executeOperation(operation, normalbetrieb, registers, color) {
+    operation = operation.trim();
     operation = operation.split(" ");  // split the operation into parts
+    console.log(operation);
     if (operation.length == 0 || operation.length > 4) { // no operation given or too many parts
         return [false, normalbetrieb];
     }
@@ -294,7 +324,7 @@ async function executeOperation(operation, normalbetrieb, registers, color) {
                 if (operation.length != 3 || !(operation[1] in registers) || isNaN(operation[2]) || isNaN(sram.children[parseInt(operation[2])].innerHTML)) {
                     return [false, normalbetrieb];
                 }
-
+                color["IA"] = color["Iout"] = color["A"] = color["AS"] = color["ASS"] = color["D"] = color["DI"] = color[operation[1] + "in"] = "red";
                 registers[operation[1]] = parseInt(sram.children[parseInt(operation[2])].innerHTML) // LOAD D M<i> (D = M<i>)
                 break;
             case "LOADIN": // last check is to make sure in sram there is a number
@@ -302,42 +332,51 @@ async function executeOperation(operation, normalbetrieb, registers, color) {
                     {
                     return [false, normalbetrieb];
                 }
+                color["Iout"] = color["IR"] = color["alu"] = color[operation[1] + "out"] = color[operation[1] + "L"] = color["A"] 
+                = color["AS"] = color["ASS"] = color["D"] = color["DI"] = color[operation[2]+"in"] = color["aluA"] = "red";
                 registers[operation[2]] = sram.children[registers[operation[1]] + parseInt(operation[3])].innerHTML; // LOADIN S D i (D = M<S+i>)
                 break;
             case "LOADI":
                 if (operation.length != 3 || !(operation[1] in registers) || isNaN(operation[2])) { 
                     return [false, normalbetrieb]; // isNan checks if the value is not a number
                 }
+                // control signals
+                color["Iout"] = color["IR"] = color["0L"] = color["alu"] = color["aluDI"] = color["DI"] = color[operation[1] + "in"] = "red";
                 registers[operation[1]] = parseInt(operation[2]); // LOADI D i (D = i)
                 break;
             case "STORE":
                 if (operation.length != 3 || !(operation[1] in registers) || isNaN(operation[2])) {
                     return [false, normalbetrieb];
                 }
+                color[operation[1] + "out"] = color[operation[1] + "D"] = color["D"] = color["DS"] = color["Iout"] = color["IA"] = color["A"] = color["AS"] = "red";
                 sram.children[parseInt(operation[2])].innerHTML = registers[operation[1]]; // STORE S i (M<i> = S)
                 break;
             case "STOREIN":
                 if (operation.length != 4 || !(operation[1] in registers) || !(operation[2] in registers) || isNaN(operation[3])) {
                     return [false, normalbetrieb];
                 }
+                color[operation[1] + "out"] = color[operation[1] + "L"] = color["alu"] = color["aluA"] = color["A"] = color["AS"] = color[operation[2] + "D"] 
+                = color[operation[2] + "out"] = color["D"] = color["DS"] = color["Iout"] = color["IR"] = "red";
                 sram.children[registers[operation[1]] + parseInt(operation[3])].innerHTML = registers[operation[2]];   // STOREIN D S i (M<D+i> = S)
                 break;
             case "MOVE":
                 if (operation.length != 3 || !(operation[1] in registers) || !(operation[2] in registers)) {
                     return [false, normalbetrieb];
                 }
-                registers[operation[2]] = registers[operation[1]]; // MOVE D S (D = S)
+                color[operation[1] + "out"] = color[operation[1] + "D"] = color["DI"] = color["D"] = color[operation[2] + "in"] = "red";
+                registers[operation[2]] = registers[operation[1]]; // MOVE S D (D = S)
                 break;
             case "NOP":
                 break;
             case "JUMP":
-                console.log(registers);
                 if (operation.length == 2 && !isNaN(operation[1])) {
                     registers["PC"] = registers["PC"] + parseInt(operation[1]) - 1; // JUMP i (PC = PC + i)
+                    color["Iout"] = color["IR"] = color["PCout"] = color["PCL"] = color["alu"] = color["aluDI"] = color["DI"] = color["PCin"]= "red";
                 }
                 else if (operation.length == 3 && operation[1] in relations && !isNaN(operation[2])) {
                     if (relations[operation[1]](registers["ACC"], 0)) {
                         registers["PC"] = registers["PC"] + parseInt(operation[2]) - 1; // JUMP R i (IF ACC R 0 THEN PC = PC + i ELSE PC = PC + 1)
+                        color["Iout"] = color["IR"] = color["PCout"] = color["PCL"] = color["alu"] = color["aluDI"] = color["DI"] = color["PCin"]= "red";
                     }
                 }
                 else {
@@ -349,9 +388,24 @@ async function executeOperation(operation, normalbetrieb, registers, color) {
                     return [false, normalbetrieb];
                 }
                 registers["IVN"] = parseInt(operation[1]); // INT i (IVN = i)
+                color["0L"] = color["alu"] = color["Iout"] = color["IR"] = color["aluDI"] = color["DI"] = color["IVNin"] = "red";
+                drawReti(color);
+                await delay(2000);
+                color = defineColors(registers);
                 registers["SP"] = registers["SP"] - 1; // free up space in the stack
+                color["SPout"] = color["SPL"] = color["alu"] = color["1R"] = color["aluDI"] = color["DI"] = color["SPin"] = "red";
+                drawReti(color);
+                await delay(2000);
+                color = defineColors(registers);
                 sram.children[registers["SP"] + 1].innerHTML = registers["PC"]; // push PC to the stack
+                color["SPout"] = color["SPL"] = color["alu"] = color["aluA"] = color["A"] = color["AS"] = color["PCD"] // STOREIN SP PC 1 (M<SP+1> = PC)
+                = color["PCout"] = color["D"] = color["DS"] = color["1R"] = "red";
+                drawReti(color);
+                await delay(2000);
+                color = defineColors(registers);
                 registers["PC"] = parseInt(sram.children[registers["IVN"]].innerHTML) - 1; // PC = M<IVN> /Begin executing the interruptservice routine, -1 since otherwise first instruction is skipped (basically PCLoad signal)
+                color["0R"] = color["alu"] = color["IVNout"] = color["IVNL"] = color["A"]  // LOADIN IVN PC 0 (PC = M<IVN>)
+                = color["AS"] = color["ASS"] = color["D"] = color["DI"] = color["PC"] = color["aluA"] = "red";
                 normalbetrieb = 0;
                 break;
             case "RTI":
@@ -359,7 +413,13 @@ async function executeOperation(operation, normalbetrieb, registers, color) {
                     return [false, normalbetrieb];
                 }
                 registers["PC"] = sram.children[registers["SP"] + 1].innerHTML; // pop PC from the stack
+                color["1R"] = color["alu"] = color["SPout"] = color["SPL"] = color["A"]  // LOADIN IVN PC 0 (PC = M<SP+1>)
+                = color["AS"] = color["ASS"] = color["D"] = color["DI"] = color["PC"] = color["aluA"] = "red";
+                drawReti(color);
+                await delay(2000);
+                color = defineColors(registers);
                 registers["SP"] = registers["SP"] + 1; // free up space in the stack
+                color["SPout"] = color["SPL"] = color["alu"] = color["1R"] = color["aluDI"] = color["DI"] = color["SPin"] = "red";
                 normalbetrieb = 1;
                 break;
             default:
@@ -369,6 +429,7 @@ async function executeOperation(operation, normalbetrieb, registers, color) {
                     }
                     // e.g. ADDI D i (D = D + i)
                     registers[operation[1]] = compute_op[operation[0].slice(0,-1)](registers[operation[1]], parseInt(operation[2]));
+                    color[operation[1] + "out"] = color[operation[1] + "L"] = color["alu"] = color["Iout"] = color["IR"] = color["aluDI"] = color["DI"] = color[operation[1] + "in"] = "red";
                 }
                 else if (operation[0] in compute_op) { // compute
                     if (operation.length != 3 || !(operation[1] in registers)) {
@@ -376,9 +437,13 @@ async function executeOperation(operation, normalbetrieb, registers, color) {
                     }
                     if (!isNaN(operation[2]) && !isNaN(sram.children[operation[2]].innerHTML) ) { // e.g. ADD D M<i> (D = D + M<i>)
                         registers[operation[1]] = compute_op[operation[0]](registers[operation[1]], sram.children[operation[2]].innerHTML);
+                        color[operation[1] + "out"] = color[operation[1] + "L"] = color["alu"] = color["Iout"] = color["IA"] = color["A"] = color["AS"] = color["ASS"]
+                        = color["D"] = color["DR"] = color["aluDI"] = color["DI"] = color[operation[1] + "in"] = "red";
                     }
-                    else if (operation[2] in registers) { // e.g. ADD S D (D = D + S)
+                    else if (operation[2] in registers) { // e.g. ADD D S (D = D + S)
                         registers[operation[1]] = compute_op[operation[0]](registers[operation[1]], registers[operation[2]]);
+                        color[operation[1] + "out"] = color[operation[1] + "L"] = color[operation[2] + "out"] = color[operation[2] + "D"] = color["D"] = color["DR"]
+                        = color["alu"] = color["aluDI"] = color["DI"] = color[operation[1] + "in"] = "red";
                     }
                     else {
                         return [false, normalbetrieb];
@@ -407,7 +472,8 @@ function writeLog(log, registers) {
 function defineColors(registers) {
     let reti_colors = {"0L": "black", "alu": "black", "aludDI": "black", "aluA": "black",
         "pcA": "black", "A": "black", "D": "black", "DI": "black",
-        "0R": "black", "IR": "black", "IA": "black", "DR": "black", "DtoI": "black"};
+        "0R": "black", "IR": "black", "IA": "black", "Iout": "black", "DR": "black", "DtoI": "black",
+        "AU": "black", "AE": "black", "AS": "black", "DU": "black", "DS": "black"};
     for (let key in registers) {
         reti_colors[key + "in"] = "black";
         reti_colors[key + "out"] = "black";
@@ -437,15 +503,18 @@ async function run() {
         (sram.children[[registers["PC"]]].innerHTML + " FETCH PHASE").padStart(20, ' ');
         writeLog(log, registers);
         let reti_colors = defineColors(registers);
+        reti_colors["PCout"] = "red";
         reti_colors["pcA"] = "red";
         reti_colors["A"] = "red";
+        reti_colors["AS"] = "red";
+        reti_colors["ASS"] = "red";
         reti_colors["D"] = "red";
         reti_colors["DtoI"] = "red";
 
         drawReti(reti_colors);
         // await so setTimeout doesnt freeze the browser
         // when promise is resolved, the function continues
-        await delay(1000);
+        await delay(2000);
         // execute phase
         reti_colors = defineColors(registers);
         let result = await executeOperation(sram.children[[registers["PC"]]].innerHTML, NB, registers, reti_colors);
@@ -458,7 +527,8 @@ async function run() {
         (sram.children[[registers["PC"]]].innerHTML + " EXECUTE PHASE").padStart(20, ' ');
         writeLog(log, registers);
         drawReti(reti_colors);
-        await delay(1000);
+        console.log(registers)
+        await delay(2000);
         registers["PC"]++;
         }
 }
