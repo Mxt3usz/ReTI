@@ -8,7 +8,7 @@ html,body{
     display: flex;
     position: relative;
     width: 15%;
-    height: 62%;
+    height: 50%;
     top: 2em;
     margin-left: 1em;
 }
@@ -42,36 +42,36 @@ html,body{
 
 canvas{
     position: relative;
-    width: 80%;
-    height: 90%;
+    width: 50%;
+    height: 30%;
     margin-top: 2em;
-    left: 3em;
+    left: 10em;
 }
 
 #mem{
     display: flex;
     position: absolute;
-    gap: 0.9em;
-    width: 27%;
-    height: 35%;
-    left: 67em;
-    top: 7.1em;
+    gap: 0.8em;
+    width: 16.4%;
+    height: 19%;
+    left: 87.67em;
+    top: 7.2em;
 }
 
 .memory{
     position: relative;
-    width: 30%;
+    width: 31.1%;
     height: 92%;
     overflow-y: scroll;
     scrollbar-width: none;
-    left: 0.2em;
+    left: 0.1em;
     top: 0.1em;
     counter-reset: linenumber -1;
 
 }
 
 .memory-entry{
-    padding: 5px;
+    padding: 4px;
     border-bottom: 1px black solid;
     margin-bottom: 5px;
     font-size: 75%;
@@ -86,12 +86,14 @@ canvas{
 }
 
 #log{
-    position: absolute;
-    left: 18.5em;
+    position: relative;
+    left: -70em;
     top: 28em;
     font-family: monospace;
     white-space: pre; /* This preserves the spacing, this needed otherwise reserving doesnt work */
     font-size: 120%;
+    width: 30%;
+    height: 20%;
 }
 
 

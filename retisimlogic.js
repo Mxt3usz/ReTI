@@ -17,8 +17,8 @@ document.querySelector("#query").addEventListener("keyup", function() {
 });
 
 let reti = document.querySelector("#canvas");
-reti.width = window.innerWidth;
-reti.height = window.innerHeight;
+reti.width = 1500;
+reti.height = 450;
 reti = reti.getContext("2d");
 
 function drawDriver(x, y) {
